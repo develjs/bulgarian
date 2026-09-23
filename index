@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Учим български език — А1-А2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.3/babel.min.js"></script>
+<style>
+  :root {
+    --indigo-50: #eef2ff;
+    --indigo-100: #e0e7ff;
+    --indigo-200: #c7d2fe;
+    --indigo-400: #818cf8;
+    --indigo-500: #6366f1;
+    --indigo-600: #4f46e5;
+    --indigo-700: #4338ca;
+    --blue-50: #eff6ff;
+    --blue-500: #3b82f6;
+    --slate-50: #f8fafc;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+    --green-50: #f0fdf4;
+    --green-200: #bbf7d0;
+    --green-400: #4ade80;
+    --green-600: #16a34a;
+    --amber-50: #fffbeb;
+    --amber-200: #fde68a;
+    --amber-400: #fbbf24;
+    --amber-500: #f59e0b;
+    --rose-50: #fff1f2;
+    --rose-200: #fecdd3;
+    --rose-400: #fb7185;
+    --rose-500: #f43f5e;
+    --white-70: rgba(255,255,255,0.7);
+    --white-80: rgba(255,255,255,0.8);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  :root {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100%;
+    background: linear-gradient(to bottom right, var(--blue-50), var(--indigo-100));
+    color: var(--slate-800);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --indigo-100: #312e81; --indigo-200: #3730a3; --blue-50: #0f172a;
+      --slate-50: #1e293b; --slate-200: #334155; --slate-300: #475569;
+      --slate-800: #e2e8f0; --slate-900: #f1f5f9;
+      --white-70: rgba(30,41,59,0.7); --white-80: rgba(30,41,59,0.85);
+    }
+    :root:not([data-theme="light"]) body { background: linear-gradient(to bottom right, #0f172a, #1e1b4b); }
+    :root:not([data-theme="light"]) .sentence-card,
+    :root:not([data-theme="light"]) .final-score-card,
+    :root:not([data-theme="light"]) .field-base { background: rgba(30,41,59,0.85); color: #e2e8f0; }
+    :root:not([data-theme="light"]) .btn-back { background: #1e293b; color: #e2e8f0; }
+  }
+  :root[data-theme="dark"] {
+    --indigo-100: #312e81; --indigo-200: #3730a3; --blue-50: #0f172a;
+    --slate-50: #1e293b; --slate-200: #334155; --slate-300: #475569;
+    --slate-800: #e2e8f0; --slate-900: #f1f5f9;
+    --white-70: rgba(30,41,59,0.7); --white-80: rgba(30,41,59,0.85);
+  }
+  .serif-display { font-family: Georgia, 'Times New Roman', serif; }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--indigo-200); border-radius: 4px; }
+
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+  .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .animate-pop { animation: pop 0.35s ease-out both; }
+
+  /* Layout */
+  .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+  .app-header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--white-70);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--slate-200);
+  }
+  .container-narrow { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+  .app-main { flex: 1; }
+  .app-footer { text-align: center; font-size: 12px; color: var(--slate-400); padding: 24px 0; }
+
+  /* Progress bar */
+  .progress-wrap { padding: 12px 0; }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; color: var(--slate-600); margin-bottom: 4px; }
+  .progress-track { height: 12px; width: 100%; border-radius: 999px; background: var(--white-70); overflow: hidden; border: 1px solid var(--slate-200); }
+  .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(to right, var(--indigo-400), var(--blue-500)); transition: width 0.5s; }
+
+  /* Exercise page */
+  .page-pad { padding: 32px 16px; }
+  .page-head { margin-bottom: 24px; }
+  .page-eyebrow { font-size: 14px; font-weight: 600; color: var(--indigo-500); margin-bottom: 4px; }
+  .page-title { font-size: 26px; font-weight: 700; color: var(--slate-800); margin: 0; }
+  .page-subtitle { color: var(--slate-500); margin: 4px 0 0; }
+
+  .card-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .sentence-card {
+    border-radius: 14px;
+    border: 1px solid var(--slate-200);
+    background: rgba(255,255,255,0.7);
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .card-row { display: flex; align-items: flex-start; gap: 12px; }
+  .card-index {
+    margin-top: 4px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px;
+    background: var(--indigo-100); color: var(--indigo-600);
+    font-size: 14px; font-weight: 600;
+  }
+  .card-body { flex: 1; }
+
+  .sentence-text { font-size: 18px; line-height: 1.7; color: var(--slate-800); }
+  .hint-text { margin-left: 8px; font-size: 14px; color: var(--slate-400); font-style: italic; }
+
+  .field-base {
+    border-radius: 8px;
+    border: 2px solid var(--slate-200);
+    background: #fff;
+    outline: none;
+    padding: 6px 10px;
+    font-size: 16px;
+    transition: border-color 0.15s, background-color 0.15s;
+    vertical-align: middle;
+  }
+  .field-inline { margin: 0 4px; }
+  .field-block { width: 100%; padding: 8px 14px; }
+  .field-base:disabled { opacity: 0.85; }
+
+  .field-correct { border-color: var(--green-400); background: var(--green-50); }
+  .field-close   { border-color: var(--amber-400); background: var(--amber-50); }
+  .field-wrong   { border-color: var(--rose-400); background: var(--rose-50); }
+
+  .translate-label { font-size: 14px; color: var(--slate-500); margin-bottom: 4px; }
+  .translate-source { color: var(--slate-800); font-weight: 500; margin-bottom: 12px; }
+
+  .correct-answer-line { margin-top: 8px; font-size: 14px; color: var(--slate-600); }
+  .correct-answer-line strong { color: var(--slate-800); font-weight: 600; }
+  .explanation-line { margin-top: 4px; font-size: 13px; color: var(--slate-500); font-style: italic; }
+
+  .card-footer { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .feedback-row { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+  .feedback-comment { font-size: 14px; font-weight: 500; color: var(--slate-600); }
+
+  .icon-correct { color: var(--green-600); font-size: 20px; }
+  .icon-close { color: var(--amber-500); font-size: 20px; }
+  .icon-wrong { color: var(--rose-500); font-size: 20px; }
+
+  .btn {
+    border: none; cursor: pointer; font-weight: 600; border-radius: 8px;
+    transition: background-color 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-check {
+    flex-shrink: 0; background: var(--indigo-600); color: #fff;
+    padding: 6px 16px; font-size: 14px;
+  }
+  .btn-check:hover { background: var(--indigo-700); }
+
+  .btn-check-all {
+    margin-top: 24px; width: 100%; background: var(--slate-800); color: #fff;
+    padding: 12px 0; font-size: 16px; border-radius: 12px;
+  }
+  .btn-check-all:hover { background: var(--slate-900); }
+
+  .nav-row { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .btn-back {
+    background: #fff; color: var(--slate-700); border: 1px solid var(--slate-300);
+    padding: 8px 16px; font-size: 15px; border-radius: 8px;
+  }
+  .btn-back:hover { background: var(--slate-50); }
+  .btn-back.hidden-btn { visibility: hidden; }
+
+  .btn-next {
+    background: var(--indigo-600); color: #fff;
+    padding: 10px 24px; font-size: 15px; border-radius: 8px;
+  }
+  .btn-next:hover { background: var(--indigo-700); }
+
+  select.field-base { appearance: auto; }
+
+  /* Final page */
+  .final-wrap { max-width: 440px; margin: 0 auto; padding: 64px 16px; text-align: center; }
+  .final-emoji { font-size: 64px; margin-bottom: 24px; }
+  .final-title { font-size: 30px; font-weight: 700; margin: 0 0 8px; }
+  .final-sub { color: var(--slate-500); margin: 0 0 24px; }
+  .final-score-card {
+    border-radius: 16px; background: var(--white-80); border: 1px solid var(--slate-200);
+    padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); margin-bottom: 32px;
+  }
+  .final-score-number { font-size: 36px; font-weight: 700; color: var(--indigo-600); margin-bottom: 4px; }
+  .final-score-pct { color: var(--slate-500); }
+  .btn-restart {
+    background: var(--indigo-600); color: #fff; padding: 12px 32px; font-size: 16px; border-radius: 12px;
+  }
+  .btn-restart:hover { background: var(--indigo-700); }
+
+  @media (max-width: 480px) {
+    .page-title { font-size: 22px; }
+    .sentence-text { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo, useCallback } = React;
+
+/* ---------------- Levenshtein & normalization helpers ---------------- */
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[m][n];
+}
+
+function normalize(str) {
+  return (str || "")
+    .toLowerCase()
+    .replace(/[.,!?;:"'«»()„“]/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function stripAll(str) {
+  return normalize(str).replace(/\s+/g, "");
+}
+
+function evaluateAnswer(userValue, answers) {
+  const userNorm = normalize(userValue);
+  const userStripped = stripAll(userValue);
+  if (!userStripped) return { result: "wrong", bestAnswer: answers[0] };
+
+  for (const ans of answers) {
+    if (normalize(ans) === userNorm) {
+      return { result: "correct", bestAnswer: ans };
+    }
+  }
+
+  let bestDist = Infinity;
+  let bestAnswer = answers[0];
+  for (const ans of answers) {
+    const ansStripped = stripAll(ans);
+    const dist = levenshtein(userStripped, ansStripped);
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestAnswer = ans;
+    }
+  }
+  const ansLen = stripAll(bestAnswer).length || 1;
+  if (bestDist / ansLen <= 0.3) {
+    return { result: "close", bestAnswer };
+  }
+  return { result: "wrong", bestAnswer };
+}
+
+/* ---------------- Comments ---------------- */
+
+const CORRECT_COMMENTS = ["Отлично!", "Перфектно!", "Браво!", "Супер!", "Точно така!", "Много добре!", "Великолепно!", "Ти си звезда!", "Продължавай така!", "Чудесно!"];
+const CLOSE_COMMENTS = ["Почти!", "Близо!", "Малко повече!", "Добър опит!", "Почти перфектно!", "Не се отказвай!", "Много близо!", "Само малко поправка!", "Добре си!", "Още малко!"];
+const WRONG_COMMENTS = ["Не се притеснявай!", "Ще стане!", "Дръж се!", "Учиш се!", "Няма проблем!", "Следващия път!", "Практиката прави майстора!", "Напред!", "Не се предавай!", "Всеки греши!"];
+
+function randomComment(result) {
+  const list = result === "correct" ? CORRECT_COMMENTS : result === "close" ? CLOSE_COMMENTS : WRONG_COMMENTS;
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+/* ---------------- Exercise content ---------------- */
+// type: "input" (fill blank inline), "select" (dropdown blank inline), "translate" (RU -> BG)
+
+const EXERCISES = [
+  // Упражнение 1 — вставить глагол в правильной форме
+  {
+    title: "Упражнение 1",
+    subtitle: "Довърши изречението — постави глагола в правилна форма",
+    items: [
+      { type: "input", before: "Ако имам време, ще ", after: " ти.", hint: "помагам", answers: ["помогна"], explanation: "'помогна' е перфектната (завършена) форма на 'помагам' — след 'ще' за просто бъдещо действие се използва точно тя." },
+      { type: "input", before: "Когато свърша работа, ще ", after: " вкъщи.", hint: "отивам", answers: ["отида"], explanation: "'отида' е перфектната форма на 'отивам', необходима след 'ще' за конкретно бъдещо действие." },
+      { type: "input", before: "Ако вали дъжд, ще ", after: " чадър.", hint: "взимам", answers: ["взема"], explanation: "'взема' е перфектната форма на 'взимам' — изразява еднократно бъдещо действие след 'ще'." },
+      { type: "input", before: "Щом стигна до магазина, ще ", after: " хляб.", hint: "купувам", answers: ["купя"], explanation: "'купя' е перфектната форма на 'купувам', използвана след 'ще' за просто бъдеще време." },
+      { type: "input", before: "Докато чакаш, ще ", after: " книгата.", hint: "чета", answers: ["прочета"], explanation: "'прочета' е перфектната форма на 'чета' — показва завършено действие в бъдещето след 'ще'." },
+      { type: "input", before: "Щом видя резултата, ще ", after: " ти.", hint: "казвам", answers: ["кажа"], explanation: "'кажа' е перфектната форма на 'казвам', необходима след 'ще' за конкретно бъдещо изказване." },
+    ],
+  },
+  // Упражнение 2 — сделать отрицательными
+  {
+    title: "Упражнение 2",
+    subtitle: "Направи изречението отрицателно",
+    items: [
+      { type: "input", before: "Ако ", after: " билет, няма да влезем на концерта.", hint: "купуваме", answers: ["не купим"], explanation: "В подчиненото изречение след 'ако' отрицанието е 'не' + сегашна форма на глагола — без 'ще'." },
+      { type: "input", before: "Когато ", after: " домашното, учителката ще се ядоса.", hint: "пишеш", answers: ["не напишеш"], explanation: "След 'когато' отрицанието в подчиненото изречение също е 'не' + сегашна форма, а не отделна конструкция с 'ще'." },
+      { type: "input", before: "Щом ", after: " навреме, ще изпуснем влака.", hint: "тръгват", answers: ["не тръгнат"], explanation: "След 'щом' отрицанието е 'не' + сегашна перфектна форма на глагола." },
+      { type: "input", before: "Докато ", after: " книгата, не можем да тръгнем.", hint: "чете", answers: ["не прочете"], explanation: "След 'докато' тук се използва перфектна форма ('не прочете'), защото се има предвид завършване на действието." },
+      { type: "input", before: "Ако ", after: " паролата, няма да влезеш в профила.", hint: "помниш", answers: ["не помниш"], explanation: "В подчиненото изречение с 'ако' отрицанието остава 'не' + сегашна форма, без 'ще'." },
+      { type: "input", before: "Ако ", after: " урока, оценката ти ще падне.", hint: "учиш", answers: ["не учиш"], explanation: "'не учиш' е отрицателна сегашна форма — в подчиненото изречение след 'ако' не се добавя 'ще'." },
+    ],
+  },
+  // Упражнение 3 — сделать вопросительными
+  {
+    title: "Упражнение 3",
+    subtitle: "Направи изречението въпросително",
+    items: [
+      { type: "input", before: "Ако имаш време, ще ми ", after: " ли?", hint: "помагам", answers: ["помогнеш"], explanation: "Въпросителността се образува само с частицата 'ли' след перфектната форма 'помогнеш' — словоредът не се променя." },
+      { type: "input", before: "Когато свършиш работа, ще ми ", after: " ли?", hint: "звъня", answers: ["звъннеш"], explanation: "'ли' стои веднага след глагола 'звъннеш', за да превърне изречението във въпрос." },
+      { type: "input", before: "Щом стигнеш, ще ми ", after: " ли съобщение?", hint: "изпращам", answers: ["изпратиш"], explanation: "Частицата 'ли' след перфектната форма 'изпратиш' е достатъчна за въпросителното значение." },
+      { type: "input", before: "Докато чакаш, ще ", after: " ли книгата?", hint: "чета", answers: ["прочетеш"], explanation: "'прочетеш' + 'ли' образуват въпросително бъдеще време, без промяна на реда на думите." },
+      { type: "input", before: "Когато се върнеш, ще ми ", after: " ли всичко?", hint: "разказвам", answers: ["разкажеш"], explanation: "Частицата 'ли' след 'разкажеш' е единствената промяна спрямо съответното твърдение." },
+      { type: "input", before: "Ако имаш въпрос, ще ме ", after: " ли?", hint: "питам", answers: ["попиташ"], explanation: "'попиташ' е перфектната форма; 'ли' след нея прави изречението въпрос." },
+    ],
+  },
+  // Упражнение 4 — выбрать союз
+  {
+    title: "Упражнение 4",
+    subtitle: "Избери правилния съюз",
+    items: [
+      { type: "select", before: "", after: " спечеля от лотарията, ще купя нова кола.", options: ["ако", "когато", "щом", "докато"], answers: ["ако"], explanation: "Условието е несигурно и хипотетично — печалбата не е сигурна, затова се използва 'ако', а не 'когато' (сигурност) или 'щом'/'докато'." },
+      { type: "select", before: "", after: " навърша осемнайсет години, ще имам право да гласувам.", options: ["ако", "когато", "щом", "докато"], answers: ["когато"], explanation: "Навършването на 18 години е сигурно бъдещо събитие (въпрос на време, не на условие), затова се използва 'когато'." },
+      { type: "select", before: "", after: " свърши работният ден, служителите си тръгват.", options: ["ако", "когато", "щом", "докато"], answers: ["когато"], explanation: "Изречението описва повтарящо се във времето събитие (всеки ден), а не условие — типично се използва 'когато'." },
+      { type: "select", before: "", after: " не си съгласен, кажи причината.", options: ["ако", "когато", "щом", "докато"], answers: ["щом"], explanation: "'Щом' тук изразява причинно-следствена връзка ('след като е факт, че не си съгласен'), а не момент във времето или несигурно условие." },
+      { type: "select", before: "", after: " всички ядоха, да раздигаме масата.", options: ["ако", "когато", "щом", "докато"], answers: ["щом"], explanation: "'Щом' показва, че действието следва веднага след факта, че всички са яли — причинно-следствена връзка." },
+      { type: "select", before: "", after: " готвя вечерята, децата пишат домашните си.", options: ["ако", "когато", "щом", "докато"], answers: ["докато"], explanation: "Двете действия протичат едновременно (по едно и също време) — точно това значение изразява 'докато'." },
+    ],
+  },
+  // Упражнение 5 — перевод RU -> BG
+  {
+    title: "Упражнение 5",
+    subtitle: "Преведи изречението на български",
+    items: [
+      { type: "translate", ru: "Если у меня будет время, я помогу тебе.", answers: ["ако имам време ще ти помогна"], explanation: "Забележка: след 'ако' не се използва 'ще' – то стои само в главното изречение ('ще ти помогна')." },
+      { type: "translate", ru: "Когда я закончу работу, пойду домой.", answers: ["когато свърша работа ще отида вкъщи"], explanation: "'Когато' въвежда подчинено изречение в сегашно време; 'ще' е само в главното ('ще отида')." },
+      { type: "translate", ru: "Как только я приеду в магазин, куплю хлеб.", answers: ["щом стигна до магазина ще купя хляб"], explanation: "След 'щом' глаголът е в сегашно време; 'ще' се появява само в главното изречение." },
+      { type: "translate", ru: "Пока ты ждёшь, я прочитаю книгу.", answers: ["докато чакаш ще прочета книгата"], explanation: "'Докато' + сегашно време показва действие, което трае; 'ще' е само в главното изречение." },
+      { type: "translate", ru: "Когда я закончу школу, найду работу.", answers: ["когато завърша училище ще намеря работа"], explanation: "'Когато' въвежда бъдещо събитие в сегашно време; 'ще' стои само в главното изречение." },
+      { type: "translate", ru: "Если ты позвонишь, я приду сразу.", answers: ["ако се обадиш ще дойда веднага"], explanation: "Подчиненото изречение с 'ако' остава в сегашно време, без 'ще', за разлика от руския еквивалент." },
+    ],
+  },
+  // Упражнение 6 — микс
+  {
+    title: "Упражнение 6",
+    subtitle: "Смесени упражнения — обобщение",
+    items: [
+      { type: "input", before: "Ако ", after: " рано, ще хванем влака.", hint: "ставаме", answers: ["станем"], explanation: "След 'ако' се използва сегашна перфектна форма ('станем'), без 'ще' — действието е еднократно и завършено." },
+      { type: "input", before: "Щом ", after: " у дома, ще ти звънна.", hint: "пристигам", answers: ["пристигна"], explanation: "'пристигна' е перфектната форма, използвана след 'щом' в сегашно време, без 'ще'." },
+      { type: "select", before: "", after: " не се обадиш до довечера, ще се притесня.", options: ["ако", "когато", "щом", "докато"], answers: ["ако"], explanation: "Обаждането или неговата липса е несигурно условие — 'ако' изразява точно такава несигурност." },
+      { type: "select", before: "", after: " съм на работа, не отговарям на телефона.", options: ["ако", "когато", "щом", "докато"], answers: ["докато"], explanation: "Двете състояния (да си на работа и да не отговаряш) се случват едновременно и продължително — това е значението на 'докато'." },
+      { type: "translate", ru: "Если ты устал, отдохни.", answers: ["ако си уморен почини си"], explanation: "Главното изречение тук е заповед (императив), затова няма 'ще'; подчиненото с 'ако' остава в сегашно време." },
+      { type: "translate", ru: "Когда придёт лето, поедем на море.", answers: ["когато дойде лятото ще отидем на море"], explanation: "'Когато' + сегашна перфектна форма ('дойде') за бъдещо събитие; 'ще' е само в главното изречение." },
+    ],
+  },
+];
+
+const TOTAL_ITEMS = EXERCISES.reduce((sum, ex) => sum + ex.items.length, 0); // 60
+
+function makeEmptyPageState(items) {
+  return items.map(() => ({ value: "", checked: false, result: null, comment: "" }));
+}
+
+function makeEmptyAllState() {
+  return EXERCISES.map((ex) => makeEmptyPageState(ex.items));
+}
+
+/* ---------------- UI subcomponents ---------------- */
+
+function FeedbackIcon({ result }) {
+  if (result === "correct") return <span className="icon-correct">✓</span>;
+  if (result === "close") return <span className="icon-close">⚠</span>;
+  if (result === "wrong") return <span className="icon-wrong">✗</span>;
+  return null;
+}
+
+function fieldClass(result) {
+  if (result === "correct") return "field-correct";
+  if (result === "close") return "field-close";
+  if (result === "wrong") return "field-wrong";
+  return "";
+}
+
+function SentenceCard({ index, item, state, onChange, onCheck }) {
+  const { value, checked, result, comment } = state;
+  const shakeClass = checked && result === "wrong" ? "animate-shake" : "";
+
+  const handleCheck = () => {
+    if (checked) return;
+    onCheck(value);
+  };
+
+  let content;
+  if (item.type === "translate") {
+    content = (
+      <div>
+        <div className="translate-label">Руски:</div>
+        <div className="translate-source">{item.ru}</div>
+        <input
+          type="text"
+          value={value}
+          disabled={checked}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Напиши превода тук..."
+          className={`field-base field-block ${fieldClass(result)}`}
+        />
+      </div>
+    );
+  } else if (item.type === "select") {
+    content = (
+      <div className="sentence-text">
+        <span>{item.before}</span>
+        <select
+          value={value}
+          disabled={checked}
+          onChange={(e) => onChange(e.target.value)}
+          className={`field-base field-inline ${fieldClass(result)}`}
+        >
+          <option value="">— избери —</option>
+          {item.options.map((opt) => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+        <span>{item.after}</span>
+      </div>
+    );
+  } else {
+    // input
+    content = (
+      <div className="sentence-text">
+        <span>{item.before}</span>
+        <input
+          type="text"
+          value={value}
+          disabled={checked}
+          onChange={(e) => onChange(e.target.value)}
+          size={Math.max(6, (item.answers[0] || "").length + 2)}
+          className={`field-base field-inline ${fieldClass(result)}`}
+        />
+        <span>{item.after}</span>
+        {item.hint && <span className="hint-text">({item.hint})</span>}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`sentence-card ${shakeClass}`}>
+      <div className="card-row">
+        <div className="card-index">{index + 1}</div>
+        <div className="card-body">
+          {content}
+
+          {checked && result !== "correct" && (
+            <div className="correct-answer-line">
+              Правилен отговор: <strong>{state.correctAnswer}</strong>
+            </div>
+          )}
+          {checked && state.explanation && (
+            <div className="explanation-line">💡 {state.explanation}</div>
+          )}
+
+          <div className="card-footer">
+            <div className="feedback-row animate-pop">
+              {checked && <FeedbackIcon result={result} />}
+              {checked && <span className="feedback-comment">{comment}</span>}
+            </div>
+            {!checked && (
+              <button onClick={handleCheck} className="btn btn-check">
+                Провери
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProgressBar({ total, allTotal }) {
+  const pct = Math.round((total / allTotal) * 100);
+  return (
+    <div className="progress-wrap">
+      <div className="progress-labels">
+        <span>Общ напредък</span>
+        <span>{total} / {allTotal}</span>
+      </div>
+      <div className="progress-track">
+        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function ExercisePage({ exerciseIndex, exercise, pageState, setPageItem, onPrev, onNext, canGoBack, isLast, allChecked }) {
+  const handleCheckOne = (itemIndex, rawValue) => {
+    const item = exercise.items[itemIndex];
+    const { result, bestAnswer } = evaluateAnswer(rawValue, item.answers);
+    setPageItem(itemIndex, {
+      value: rawValue,
+      checked: true,
+      result,
+      comment: randomComment(result),
+      correctAnswer: bestAnswer,
+      explanation: item.explanation || null,
+    });
+  };
+
+  const handleChangeOne = (itemIndex, val) => {
+    setPageItem(itemIndex, { value: val });
+  };
+
+  const handleCheckAll = () => {
+    exercise.items.forEach((item, i) => {
+      if (!pageState[i].checked) {
+        handleCheckOne(i, pageState[i].value);
+      }
+    });
+  };
+
+  const hasUnchecked = pageState.some((s) => !s.checked);
+
+  return (
+    <div className="container-narrow page-pad">
+      <div className="page-head">
+        <div className="page-eyebrow">Упражнение {exerciseIndex + 1} от {EXERCISES.length}</div>
+        <h1 className="page-title serif-display">{exercise.title}</h1>
+        <p className="page-subtitle">{exercise.subtitle}</p>
+      </div>
+
+      <div className="card-list">
+        {exercise.items.map((item, i) => (
+          <SentenceCard
+            key={i}
+            index={i}
+            item={item}
+            state={pageState[i]}
+            onChange={(val) => handleChangeOne(i, val)}
+            onCheck={(val) => handleCheckOne(i, val)}
+          />
+        ))}
+      </div>
+
+      {hasUnchecked && (
+        <button onClick={handleCheckAll} className="btn btn-check-all">
+          Провери всичко
+        </button>
+      )}
+
+      <div className="nav-row">
+        <button
+          onClick={onPrev}
+          disabled={!canGoBack}
+          className={`btn btn-back ${!canGoBack ? "hidden-btn" : ""}`}
+        >
+          ← Назад
+        </button>
+
+        {allChecked && (
+          <button onClick={onNext} className="btn btn-next animate-pop">
+            {isLast ? "Завърши →" : "Следващо упражнение →"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FinalPage({ totalCorrect, allTotal, onRestart }) {
+  const pct = Math.round((totalCorrect / allTotal) * 100);
+  let emoji = "💪";
+  if (pct >= 90) emoji = "🏆";
+  else if (pct >= 75) emoji = "🌟";
+  else if (pct >= 60) emoji = "👍";
+
+  return (
+    <div className="final-wrap">
+      <div className="final-emoji">{emoji}</div>
+      <h1 className="final-title serif-display">Готово!</h1>
+      <p className="final-sub">Ето твоя резултат от упражненията за условни изречения.</p>
+
+      <div className="final-score-card">
+        <div className="final-score-number">{totalCorrect} / {allTotal}</div>
+        <div className="final-score-pct">{pct}% правилни отговори</div>
+      </div>
+
+      <button onClick={onRestart} className="btn btn-restart">
+        Започни отново
+      </button>
+    </div>
+  );
+}
+
+/* ---------------- App ---------------- */
+
+function App() {
+  const [pageIndex, setPageIndex] = useState(0); // 0..5, then 6 = final
+  const [allState, setAllState] = useState(() => makeEmptyAllState());
+
+  const totalCorrect = useMemo(() => {
+    let sum = 0;
+    allState.forEach((page) => page.forEach((item) => { if (item.checked && item.result === "correct") sum += 1; }));
+    return sum;
+  }, [allState]);
+
+  const isFinal = pageIndex >= EXERCISES.length;
+
+  const setPageItem = useCallback((itemIndex, patch) => {
+    setAllState((prev) => {
+      const next = prev.map((p) => p.slice());
+      next[pageIndex] = next[pageIndex].slice();
+      next[pageIndex][itemIndex] = { ...next[pageIndex][itemIndex], ...patch };
+      return next;
+    });
+  }, [pageIndex]);
+
+  const handleRestart = () => {
+    setAllState(makeEmptyAllState());
+    setPageIndex(0);
+  };
+
+  return (
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="container-narrow progress-wrap">
+          <ProgressBar total={totalCorrect} allTotal={TOTAL_ITEMS} />
+        </div>
+      </header>
+
+      <main className="app-main">
+        {isFinal ? (
+          <FinalPage totalCorrect={totalCorrect} allTotal={TOTAL_ITEMS} onRestart={handleRestart} />
+        ) : (
+          <ExercisePage
+            key={pageIndex}
+            exerciseIndex={pageIndex}
+            exercise={EXERCISES[pageIndex]}
+            pageState={allState[pageIndex]}
+            setPageItem={setPageItem}
+            onPrev={() => setPageIndex((p) => Math.max(0, p - 1))}
+            onNext={() => setPageIndex((p) => p + 1)}
+            canGoBack={pageIndex > 0}
+            isLast={pageIndex === EXERCISES.length - 1}
+            allChecked={allState[pageIndex].every((s) => s.checked)}
+          />
+        )}
+      </main>
+
+      <footer className="app-footer">
+        Учене на български език · Сложноподчинени изречения (условие тип 1)
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
