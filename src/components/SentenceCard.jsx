@@ -12,62 +12,81 @@ function fieldClass(result) {
   return "";
 }
 
+function BlankControl({ item, blank, value, checked, result, onChange }) {
+  const className = `field-base ${item.type === "translate" ? "field-block" : "field-inline"} ${fieldClass(result)}`;
+  if (item.type === "select") {
+    return (
+      <select value={value} disabled={checked} onChange={(e) => onChange(e.target.value)} className={className}>
+        <option value="">— избери —</option>
+        {item.options.map((opt) => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+    );
+  }
+  return (
+    <input
+      type="text"
+      value={value}
+      disabled={checked}
+      onChange={(e) => onChange(e.target.value)}
+      size={item.type === "translate" ? undefined : Math.max(6, (blank.answers[0] || "").length + 2)}
+      placeholder={item.type === "translate" ? "Напиши превода тук..." : undefined}
+      className={className}
+    />
+  );
+}
+
 function SentenceCard({ index, item, state, onChange, onCheck }) {
-  const { value, checked, result, comment } = state;
+  const { values, checked, result, comment, fieldResults } = state;
   const shakeClass = checked && result === "wrong" ? "animate-shake" : "";
 
   const handleCheck = () => {
     if (checked) return;
-    onCheck(value);
+    onCheck();
   };
 
+  const blankAt = (fieldIndex) => (
+    <BlankControl
+      item={item}
+      blank={item.blanks[fieldIndex]}
+      value={values[fieldIndex] ?? ""}
+      checked={checked}
+      result={checked ? fieldResults?.[fieldIndex] : null}
+      onChange={(val) => onChange(fieldIndex, val)}
+    />
+  );
+
   let content;
-  if (item.type === "translate") {
+  if (item.layout === "parallel") {
     content = (
       <div>
         <div className="translate-label">Руски:</div>
-        <div className="translate-source">{item.ru}</div>
-        <input
-          type="text"
-          value={value}
-          disabled={checked}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="Напиши превода тук..."
-          className={`field-base field-block ${fieldClass(result)}`}
-        />
-      </div>
-    );
-  } else if (item.type === "select") {
-    content = (
-      <div className="sentence-text">
-        <span>{item.before}</span>
-        <select
-          value={value}
-          disabled={checked}
-          onChange={(e) => onChange(e.target.value)}
-          className={`field-base field-inline ${fieldClass(result)}`}
-        >
-          <option value="">— избери —</option>
-          {item.options.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
-          ))}
-        </select>
-        <span>{item.after}</span>
+        <div className="translate-source">
+          {item.ru}
+          {item.hint && <span className="hint-text">({item.hint})</span>}
+        </div>
+        {item.blanks.map((blank) => (
+          <BlankControl
+            key={blank.index}
+            item={item}
+            blank={blank}
+            value={values[blank.index] ?? ""}
+            checked={checked}
+            result={checked ? fieldResults?.[blank.index] : null}
+            onChange={(val) => onChange(blank.index, val)}
+          />
+        ))}
       </div>
     );
   } else {
     content = (
       <div className="sentence-text">
-        <span>{item.before}</span>
-        <input
-          type="text"
-          value={value}
-          disabled={checked}
-          onChange={(e) => onChange(e.target.value)}
-          size={Math.max(6, (item.answers[0] || "").length + 2)}
-          className={`field-base field-inline ${fieldClass(result)}`}
-        />
-        <span>{item.after}</span>
+        {item.parts.map((part, i) => (
+          part.type === "text"
+            ? <span key={i}>{part.text}</span>
+            : <span key={i}>{blankAt(part.index)}</span>
+        ))}
         {item.hint && <span className="hint-text">({item.hint})</span>}
       </div>
     );

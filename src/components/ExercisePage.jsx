@@ -1,31 +1,33 @@
-import { evaluateAnswer } from "../lib/evaluate.js";
+import { gradeItem } from "../lib/evaluate.js";
 import { randomComment } from "../lib/comments.js";
 import { EXERCISES } from "../data/uslovie-tip-1.js";
 import { SentenceCard } from "./SentenceCard.jsx";
 
 function ExercisePage({ exerciseIndex, exercise, pageState, setPageItem, onPrev, onNext, canGoBack, isLast, allChecked }) {
-  const handleCheckOne = (itemIndex, rawValue) => {
+  const handleCheckOne = (itemIndex) => {
     const item = exercise.items[itemIndex];
-    const { result, bestAnswer } = evaluateAnswer(rawValue, item.answers);
+    const current = pageState[itemIndex];
+    if (current.checked) return;
+    const graded = gradeItem(item.blanks, current.values);
     setPageItem(itemIndex, {
-      value: rawValue,
       checked: true,
-      result,
-      comment: randomComment(result),
-      correctAnswer: bestAnswer,
+      result: graded.result,
+      fieldResults: graded.fieldResults,
+      comment: randomComment(graded.result),
+      correctAnswer: graded.correctAnswer,
       explanation: item.explanation || null,
     });
   };
 
-  const handleChangeOne = (itemIndex, val) => {
-    setPageItem(itemIndex, { value: val });
+  const handleChangeOne = (itemIndex, fieldIndex, val) => {
+    const values = pageState[itemIndex].values.slice();
+    values[fieldIndex] = val;
+    setPageItem(itemIndex, { values });
   };
 
   const handleCheckAll = () => {
-    exercise.items.forEach((item, i) => {
-      if (!pageState[i].checked) {
-        handleCheckOne(i, pageState[i].value);
-      }
+    pageState.forEach((state, i) => {
+      if (!state.checked) handleCheckOne(i);
     });
   };
 
@@ -46,8 +48,8 @@ function ExercisePage({ exerciseIndex, exercise, pageState, setPageItem, onPrev,
             index={i}
             item={item}
             state={pageState[i]}
-            onChange={(val) => handleChangeOne(i, val)}
-            onCheck={(val) => handleCheckOne(i, val)}
+            onChange={(fieldIndex, val) => handleChangeOne(i, fieldIndex, val)}
+            onCheck={() => handleCheckOne(i)}
           />
         ))}
       </div>

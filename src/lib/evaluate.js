@@ -58,4 +58,17 @@ function evaluateAnswer(userValue, answers) {
   return { result: "wrong", bestAnswer };
 }
 
-export { evaluateAnswer };
+function gradeItem(blanks, values) {
+  const judged = blanks.map((blank, i) => evaluateAnswer(values?.[i], blank.answers));
+  const fieldResults = judged.map((item) => item.result);
+  let result = "correct";
+  if (fieldResults.includes("wrong")) result = "wrong";
+  else if (fieldResults.includes("close")) result = "close";
+  return {
+    result,
+    fieldResults,
+    correctAnswer: judged.map((item) => item.bestAnswer).join(" · ")
+  };
+}
+
+export { evaluateAnswer, gradeItem };

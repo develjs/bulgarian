@@ -143,6 +143,7 @@
   }
   .field-inline { margin: 0 4px; }
   .field-block { width: 100%; padding: 8px 14px; }
+  .field-block + .field-block { margin-top: 8px; }
   .field-base:disabled { opacity: 0.85; }
 
   .field-correct { border-color: var(--green-400); background: var(--green-50); }
