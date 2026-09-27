@@ -1,6 +1,6 @@
 import { evaluateAnswer } from "../lib/evaluate.js";
 import { randomComment } from "../lib/comments.js";
-import { EXERCISES } from "../data/exercises.js";
+import { EXERCISES } from "../data/uslovie-tip-1.js";
 import { SentenceCard } from "./SentenceCard.jsx";
 
 function ExercisePage({ exerciseIndex, exercise, pageState, setPageItem, onPrev, onNext, canGoBack, isLast, allChecked }) {

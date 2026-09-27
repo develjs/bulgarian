@@ -1,12 +1,17 @@
 import { useCallback, useMemo, useState } from "react";
-import { EXERCISES, TOTAL_ITEMS, makeEmptyAllState } from "./data/exercises.js";
+import { EXERCISES, TOTAL_ITEMS, makeEmptyAllState } from "./data/uslovie-tip-1.js";
+import { TESTS } from "./data/tests.js";
 import { ExercisePage } from "./components/ExercisePage.jsx";
 import { FinalPage } from "./components/FinalPage.jsx";
+import { HomePage } from "./components/HomePage.jsx";
 import { ProgressBar } from "./components/ProgressBar.jsx";
 
 function App() {
+  const [activeTestId, setActiveTestId] = useState(null);
   const [pageIndex, setPageIndex] = useState(0);
   const [allState, setAllState] = useState(() => makeEmptyAllState());
+
+  const activeTest = TESTS.find((test) => test.id === activeTestId) ?? null;
 
   const totalCorrect = useMemo(() => {
     let sum = 0;
@@ -25,6 +30,13 @@ function App() {
     });
   }, [pageIndex]);
 
+  const handleStart = (testId) => {
+    if (!TESTS.some((test) => test.id === testId)) return;
+    setAllState(makeEmptyAllState());
+    setPageIndex(0);
+    setActiveTestId(testId);
+  };
+
   const handleRestart = () => {
     setAllState(makeEmptyAllState());
     setPageIndex(0);
@@ -32,14 +44,18 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div className="container-narrow progress-wrap">
-          <ProgressBar total={totalCorrect} allTotal={TOTAL_ITEMS} />
-        </div>
-      </header>
+      {activeTest && (
+        <header className="app-header">
+          <div className="container-narrow progress-wrap">
+            <ProgressBar total={totalCorrect} allTotal={TOTAL_ITEMS} />
+          </div>
+        </header>
+      )}
 
       <main className="app-main">
-        {isFinal ? (
+        {!activeTest ? (
+          <HomePage tests={TESTS} onStart={handleStart} />
+        ) : isFinal ? (
           <FinalPage totalCorrect={totalCorrect} allTotal={TOTAL_ITEMS} onRestart={handleRestart} />
         ) : (
           <ExercisePage
@@ -58,7 +74,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        Учене на български език · Сложноподчинени изречения (условие тип 1)
+        Учене на български език{activeTest ? ` · ${activeTest.title}` : ""}
       </footer>
     </div>
   );
