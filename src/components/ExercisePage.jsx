@@ -1,9 +1,8 @@
 import { gradeItem } from "../lib/evaluate.js";
 import { randomComment } from "../lib/comments.js";
-import { EXERCISES } from "../data/uslovie-tip-1.js";
 import { SentenceCard } from "./SentenceCard.jsx";
 
-function ExercisePage({ exerciseIndex, exercise, pageState, setPageItem, onPrev, onNext, canGoBack, isLast, allChecked }) {
+function ExercisePage({ exerciseIndex, exerciseCount, exercise, pageState, setPageItem, onPrev, onNext, canGoBack, isLast, allChecked }) {
   const handleCheckOne = (itemIndex) => {
     const item = exercise.items[itemIndex];
     const current = pageState[itemIndex];
@@ -36,7 +35,7 @@ function ExercisePage({ exerciseIndex, exercise, pageState, setPageItem, onPrev,
   return (
     <div className="container-narrow page-pad">
       <div className="page-head">
-        <div className="page-eyebrow">Упражнение {exerciseIndex + 1} от {EXERCISES.length}</div>
+        <div className="page-eyebrow">Упражнение {exerciseIndex + 1} от {exerciseCount}</div>
         <h1 className="page-title serif-display">{exercise.title}</h1>
         <p className="page-subtitle">{exercise.subtitle}</p>
       </div>

@@ -1,4 +1,4 @@
-function FinalPage({ totalCorrect, allTotal, onRestart }) {
+function FinalPage({ totalCorrect, allTotal, resultText, onRestart }) {
   const pct = Math.round((totalCorrect / allTotal) * 100);
   let emoji = "💪";
   if (pct >= 90) emoji = "🏆";
@@ -9,7 +9,7 @@ function FinalPage({ totalCorrect, allTotal, onRestart }) {
     <div className="final-wrap">
       <div className="final-emoji">{emoji}</div>
       <h1 className="final-title serif-display">Готово!</h1>
-      <p className="final-sub">Ето твоя резултат от упражненията за условни изречения.</p>
+      <p className="final-sub">{resultText}</p>
 
       <div className="final-score-card">
         <div className="final-score-number">{totalCorrect} / {allTotal}</div>

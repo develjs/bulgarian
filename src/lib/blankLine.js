@@ -138,7 +138,7 @@ function expandExerciseItem(item, where = "пункт") {
   if (item.type === "translate" && parsed.layout !== "parallel") {
     throw new Error(`Перевод пишется после предложения: ${item.text}`);
   }
-  if (item.type !== "translate" && parsed.layout === "parallel") {
+  if (item.type === "input" && parsed.layout === "parallel") {
     throw new Error(`Поле после предложения — это перевод (${where})`);
   }
   if (item.type === "select") {

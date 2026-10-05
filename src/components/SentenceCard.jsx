@@ -13,7 +13,7 @@ function fieldClass(result) {
 }
 
 function BlankControl({ item, blank, value, checked, result, onChange }) {
-  const className = `field-base ${item.type === "translate" ? "field-block" : "field-inline"} ${fieldClass(result)}`;
+  const className = `field-base ${item.layout === "parallel" ? "field-block" : "field-inline"} ${fieldClass(result)}`;
   if (item.type === "select") {
     return (
       <select value={value} disabled={checked} onChange={(e) => onChange(e.target.value)} className={className}>
