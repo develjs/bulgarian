@@ -1,5 +1,6 @@
 import * as uslovieTip1 from "./uslovie-tip-1.js";
 import * as glagoliZaDvizhenie from "./glagoli-za-dvizhenie.js";
+import { prepareTest } from "../lib/testContent.js";
 
 /* Список видов тестов. Файл заданий называется как id. */
 
@@ -17,8 +18,8 @@ const TESTS = [
 ];
 
 const TEST_CONTENT = {
-  "uslovie-tip-1": uslovieTip1,
-  "glagoli-za-dvizhenie": glagoliZaDvizhenie,
+  "uslovie-tip-1": prepareTest(uslovieTip1.EXERCISES),
+  "glagoli-za-dvizhenie": prepareTest(glagoliZaDvizhenie.EXERCISES),
 };
 
 export { TESTS, TEST_CONTENT };

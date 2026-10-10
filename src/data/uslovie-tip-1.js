@@ -1,5 +1,3 @@
-import { expandExerciseItem } from "../lib/blankLine.js";
-
 /* ---------------- Exercise content ---------------- */
 // type: "input" (fill blank inline), "select" (dropdown blank inline), "translate" (RU -> BG)
 // Пропуски внутри фразы: {эталон1|эталон2}. Подсказка: [глагол], до или после перевода.
@@ -195,24 +193,5 @@ const EXERCISES = [
   }]
 }];
 
-for (const exercise of EXERCISES) {
-  exercise.items = exercise.items.map((item, index) =>
-    expandExerciseItem(item, `${exercise.title}, пункт ${index + 1}`)
-  );
-}
 
-const TOTAL_ITEMS = EXERCISES.reduce((sum, ex) => sum + ex.items.length, 0); // 60
-
-function makeEmptyPageState(items) {
-  return items.map((item) => ({
-    values: item.blanks.map(() => ""),
-    checked: false,
-    result: null,
-    comment: ""
-  }));
-}
-function makeEmptyAllState() {
-  return EXERCISES.map(ex => makeEmptyPageState(ex.items));
-}
-
-export { EXERCISES, TOTAL_ITEMS, makeEmptyPageState, makeEmptyAllState };
+export { EXERCISES };

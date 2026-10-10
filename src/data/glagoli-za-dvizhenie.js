@@ -1,5 +1,3 @@
-import { expandExerciseItem } from "../lib/blankLine.js";
-
 /* Глаголи за движение, A1. Упражнение 5 е превод на ръка, останалите са избор. Без подсказка. */
 
 const EXERCISES = [
@@ -213,24 +211,5 @@ const EXERCISES = [
   }]
 }];
 
-for (const exercise of EXERCISES) {
-  exercise.items = exercise.items.map((item, index) =>
-    expandExerciseItem(item, `${exercise.title}, пункт ${index + 1}`)
-  );
-}
 
-const TOTAL_ITEMS = EXERCISES.reduce((sum, ex) => sum + ex.items.length, 0);
-
-function makeEmptyPageState(items) {
-  return items.map((item) => ({
-    values: item.blanks.map(() => ""),
-    checked: false,
-    result: null,
-    comment: ""
-  }));
-}
-function makeEmptyAllState() {
-  return EXERCISES.map(ex => makeEmptyPageState(ex.items));
-}
-
-export { EXERCISES, TOTAL_ITEMS, makeEmptyPageState, makeEmptyAllState };
+export { EXERCISES };
